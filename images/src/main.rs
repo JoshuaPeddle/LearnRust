@@ -49,6 +49,12 @@ fn image_to_array(img: &image::DynamicImage) -> RGBAImage {
     rgba
 }
 
+
+fn rename_file(path: &Path, new_name: &str) {
+    let new_path = path.with_file_name(new_name);
+    //println!("{:?}",file.split('/').last().unwrap());
+    std::fs::rename(path, new_path).unwrap();
+}
 fn main() {
     let file = if env::args().count() == 2 {
         env::args().nth(1).unwrap()
@@ -75,8 +81,8 @@ fn main() {
 
     // The color method returns the image's ColorType
     println!("{:?}", im.color());
-
-    let fout = &mut File::create(&Path::new(&format!("{}new.png", file))).unwrap();
+    
+    let fout = &mut File::create(&Path::new(&format!("{}", file))).unwrap();
 
     // Write the contents of this image to the Writer in PNG format.
     im.write_to(fout, ImageFormat::Png).unwrap();
