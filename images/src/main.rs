@@ -3,58 +3,13 @@ extern crate image;
 extern crate ndarray;
 
 use std::env;
-use std::fs::File;
+
 use std::path::Path;
 
-use image::{GenericImageView, ImageFormat};
+use images;
 
-struct RGBAImage {
-    width: u32,
-    height: u32,
-    red: ndarray::Array2<u8>,
-    green: ndarray::Array2<u8>,
-    blue: ndarray::Array2<u8>,
-    alpha: ndarray::Array2<u8>,
-}
+use image::GenericImageView;
 
-fn image_to_array(img: &image::DynamicImage) -> RGBAImage {
-    let (width, height) = img.dimensions();
-    println!("{}x{}", width, height);
-    let mut array = ndarray::Array2::zeros((width as usize, height as usize));
-    let mut array1 = ndarray::Array2::zeros((width as usize, height as usize));
-    let mut array2 = ndarray::Array2::zeros((width as usize, height as usize));
-    let mut array3 = ndarray::Array2::zeros((width as usize, height as usize));
-
-    for y in 0..height - 1 {
-        for x in 0..width - 1 {
-            let pixel = img.get_pixel(x, y);
-            //println!("{}", pixel);
-            array[[x as usize, y as usize]] = pixel[0];
-            array1[[x as usize, y as usize]] = pixel[1];
-            array2[[x as usize, y as usize]] = pixel[2];
-            array3[[x as usize, y as usize]] = pixel[3];
-            //array[y][x] = pixel[0];
-        }
-    }
-
-    let rgba = RGBAImage {
-        width: width,
-        height: height,
-        red: array,
-        green: array1,
-        blue: array2,
-        alpha: array3,
-    };
-
-    rgba
-}
-
-
-fn rename_file(path: &Path, new_name: &str) {
-    let new_path = path.with_file_name(new_name);
-    //println!("{:?}",file.split('/').last().unwrap());
-    std::fs::rename(path, new_path).unwrap();
-}
 fn main() {
     let file = if env::args().count() == 2 {
         env::args().nth(1).unwrap()
@@ -73,17 +28,28 @@ fn main() {
     println!("pixel at (0, 0) {:?}", im.get_pixel(128, 128));
 
     // Convert the dynamic image to an array of pixels
-    let array = image_to_array(&im);
-    println!(
-        "red{:#?} green {:#?} blue {:#?} alpha {:#?} height x width {} x {}",
-        array.red.dim(), array.green.dim(), array.blue.dim(), array.alpha.dim(), array.height, array.width
-    );
+    let _array = images::image_to_array(&im);
+    // println!(
+    //     "red{:#?} green {:#?} blue {:#?} alpha {:#?} height x width {} x {}",
+    //     array.red.dim(),
+    //     array.green.dim(),
+    //     array.blue.dim(),
+    //     array.alpha.dim(),
+    //     array.height,
+    //     array.width
+    // );
 
     // The color method returns the image's ColorType
     println!("{:?}", im.color());
-    
-    let fout = &mut File::create(&Path::new(&format!("{}", file))).unwrap();
 
-    // Write the contents of this image to the Writer in PNG format.
-    im.write_to(fout, ImageFormat::Png).unwrap();
+    let file_extension = images::extract_file_extension(&file);
+    let file_name = images::extract_file_name(&file);
+    // println!(
+    //     "File name: {:?}, Extension: {:?} ",
+    //     file_name, file_extension,
+    // );
+
+    let new_path = Path::new(&file).with_file_name(format!("new_{}.{}", file_name, file_extension));
+
+    images::write_img(&im, &new_path, &file_extension);
 }
