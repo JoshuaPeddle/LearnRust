@@ -1,2 +1,6 @@
-/fibonacci/target
-/webserver2/target
+# Build directories for the project
+fibonacci/target
+webserver1/target
+webserver2/target
+vectors/target
+images/target
