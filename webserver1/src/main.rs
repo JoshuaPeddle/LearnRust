@@ -5,7 +5,6 @@ use webserver1;
 
 extern crate chrono;
 
-
 fn main() -> io::Result<()> {
     println!("Starting server...");
 
@@ -15,11 +14,9 @@ fn main() -> io::Result<()> {
 
     for stream in listener.incoming() {
         match stream {
-            Ok(stream) => {
-                match webserver1::handle_client(stream) {
-                    Err(e) => eprintln!("Error handling client: {}", e),
-                    _ => (),
-                }
+            Ok(stream) => match webserver1::handle_client(stream) {
+                Err(e) => eprintln!("Error handling client: {}", e),
+                _ => (),
             },
             Err(e) => eprintln!("Connection failed: {}", e),
         }

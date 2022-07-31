@@ -5,7 +5,6 @@ use std::net::TcpStream;
 use bufstream::BufStream;
 use chrono::prelude::*;
 
-
 struct Request {
     http_version: String,
     method: String,
@@ -23,10 +22,10 @@ pub fn handle_client(stream: TcpStream) -> io::Result<()> {
     match parse_request(&mut request_line) {
         Ok(request) => {
             log_request(&request);
-        },
+        }
         Err(()) => {
             println!("Ba request: {}", &request_line);
-        },
+        }
     }
 
     Ok(())
@@ -48,20 +47,17 @@ fn parse_request(request: &mut String) -> Result<Request, ()> {
     };
     let time = Local::now();
 
-    Ok( Request {
+    Ok(Request {
         http_version: http_version,
         method: method,
         path: path,
-        time: time
-    } )
+        time: time,
+    })
 }
 
 fn log_request(request: &Request) {
     println!(
         "[{}] \"{} {} {}\"",
-        request.time,
-        request.method,
-        request.path,
-        request.http_version,
+        request.time, request.method, request.path, request.http_version,
     );
 }

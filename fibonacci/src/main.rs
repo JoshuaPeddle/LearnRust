@@ -32,7 +32,6 @@ fn generate_fibonacci(num: u128) -> Vec<u128> {
 }
 #[exec_time]
 fn main() {
-
     let args: Vec<String> = env::args().collect();
 
     let mut num = 184467440737095516000000000000000000000;
