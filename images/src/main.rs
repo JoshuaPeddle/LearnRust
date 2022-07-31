@@ -8,25 +8,46 @@ use std::path::Path;
 
 use image::{GenericImageView, ImageFormat};
 
+struct RGBAImage {
+    width: u32,
+    height: u32,
+    red: ndarray::Array2<u8>,
+    green: ndarray::Array2<u8>,
+    blue: ndarray::Array2<u8>,
+    alpha: ndarray::Array2<u8>,
+}
 
-fn image_to_array(img: &image::DynamicImage) -> ndarray::Array2<u8> {
+fn image_to_array(img: &image::DynamicImage) -> RGBAImage {
     let (width, height) = img.dimensions();
     println!("{}x{}", width, height);
-    let mut array = ndarray::Array2::zeros( (width as usize,height as usize) );
+    let mut array = ndarray::Array2::zeros((width as usize, height as usize));
+    let mut array1 = ndarray::Array2::zeros((width as usize, height as usize));
+    let mut array2 = ndarray::Array2::zeros((width as usize, height as usize));
+    let mut array3 = ndarray::Array2::zeros((width as usize, height as usize));
 
-    for y in 0..height-1 {
-        for x in 0..width-1 {
+    for y in 0..height - 1 {
+        for x in 0..width - 1 {
             let pixel = img.get_pixel(x, y);
             //println!("{}", pixel);
             array[[x as usize, y as usize]] = pixel[0];
-
+            array1[[x as usize, y as usize]] = pixel[1];
+            array2[[x as usize, y as usize]] = pixel[2];
+            array3[[x as usize, y as usize]] = pixel[3];
             //array[y][x] = pixel[0];
         }
     }
 
-    array
-}
+    let rgba = RGBAImage {
+        width: width,
+        height: height,
+        red: array,
+        green: array1,
+        blue: array2,
+        alpha: array3,
+    };
 
+    rgba
+}
 
 fn main() {
     let file = if env::args().count() == 2 {
@@ -47,8 +68,10 @@ fn main() {
 
     // Convert the dynamic image to an array of pixels
     let array = image_to_array(&im);
-    println!("{}", array);
-
+    println!(
+        "red{:#?} green {:#?} blue {:#?} alpha {:#?} height x width {} x {}",
+        array.red.dim(), array.green.dim(), array.blue.dim(), array.alpha.dim(), array.height, array.width
+    );
 
     // The color method returns the image's ColorType
     println!("{:?}", im.color());
