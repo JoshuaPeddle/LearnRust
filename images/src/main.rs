@@ -1,6 +1,9 @@
 //! An example of opening an image.
+
 extern crate image;
+
 extern crate ndarray;
+//https://docs.rs/ndarray/0.12.1/ndarray/doc/ndarray_for_numpy_users/index.html
 
 use std::env;
 
@@ -10,11 +13,12 @@ use images;
 
 use image::GenericImageView;
 
-fn main() {
+fn _debug_suite() {
     let file = if env::args().count() == 2 {
         env::args().nth(1).unwrap()
     } else {
-        panic!("Please enter a file")
+        //panic!("Please enter a file")
+        "images/index.png".to_string()
     };
 
     // Use the open function to load an image from a Path.
@@ -40,6 +44,9 @@ fn main() {
     // );
 
     // The color method returns the image's ColorType
+
+    let blured_im = im.blur(1 as f32);
+
     println!("{:?}", im.color());
 
     let file_extension = images::extract_file_extension(&file);
@@ -51,5 +58,43 @@ fn main() {
 
     let new_path = Path::new(&file).with_file_name(format!("new_{}.{}", file_name, file_extension));
 
-    images::write_img(&im, &new_path, &file_extension);
+    images::write_img(&blured_im, &new_path, &file_extension);
+}
+
+fn main() {
+    //_debug_suite();
+
+    let file = if env::args().count() == 2 {
+        env::args().nth(1).unwrap()
+    } else {
+        //panic!("Please enter a file")
+        "images/index.png".to_string()
+    };
+
+    // Use the open function to load an image from a Path.
+    // ```open``` returns a dynamic image.
+    let im = image::open(&Path::new(&file)).unwrap();
+
+    let mut target = im.clone();
+
+    images::fill_dynamic_image(&mut target, image::Rgba([123, 123, 0, 255]));
+
+    //let black_pixel = image::Rgba([0, 0, 0, 255]);
+    //for pixel in im.pixels() {
+    //println!("{:?}", pixel);
+    //println!("{:?}", pixel.0);
+    //    target.put_pixel(pixel.0, pixel.1, black_pixel);
+    //}
+    //                   WRITE IMAGE
+
+    let file_extension = images::extract_file_extension(&file);
+    let file_name = images::extract_file_name(&file);
+    // println!(
+    //     "File name: {:?}, Extension: {:?} ",
+    //     file_name, file_extension,
+    // );
+
+    let new_path = Path::new(&file).with_file_name(format!("new_{}.{}", file_name, file_extension));
+
+    images::write_img(&target, &new_path, &file_extension);
 }

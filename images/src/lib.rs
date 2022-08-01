@@ -1,8 +1,19 @@
 use std::fs::File;
 use std::path::Path;
 
-use image::{GenericImageView, ImageFormat};
+use image::{DynamicImage, GenericImageView, ImageFormat, Rgba, GenericImage};
 
+// //Create a guassian kernel with a given size and sigma
+
+/**
+ * Extract the file extention from a path.
+ * 
+ * # Arguments
+ * * `path` - The path to extract the file extension from.
+ * 
+ * # Returns
+ * * The file extension.
+ */
 pub fn extract_file_extension(file: &String) -> String {
     file.split('/')
         .last()
@@ -13,6 +24,15 @@ pub fn extract_file_extension(file: &String) -> String {
         .to_string()
 }
 
+/**
+ * Extract the file name from a path.
+ * 
+ * # Arguments
+ * * `path` - The path to extract the file name from.
+ * 
+ * # Returns
+ * * The file name.
+ */
 pub fn extract_file_name(file: &String) -> String {
     file.split('/')
         .last()
@@ -32,22 +52,22 @@ pub struct RGBAImage {
     pub alpha: ndarray::Array2<u8>,
 }
 
-/** 
- * Convert DynamicImage to RGBAImage
- * # Arguments
- * * `img` - The DynamicImage to convert
- * 
- * # Return 
- * * RGBAImage
- * 
- * @see
- * 
- * https://docs.rs/image/0.9.0/image/
- * 
- * https://docs.rs/ndarray/0.12.0/ndarray/
- * 
+/**
+* Convert DynamicImage to RGBAImage
+* # Arguments
+* * `img` - The DynamicImage to convert
+*
+* # Return
+* * RGBAImage
+*
+* @see
+*
+* https://docs.rs/image/0.9.0/image/
+*
+* https://docs.rs/ndarray/0.12.0/ndarray/
+*
 
- */
+*/
 pub fn image_to_array(img: &image::DynamicImage) -> RGBAImage {
     let (width, height) = img.dimensions();
     println!("{}x{}", width, height);
@@ -79,6 +99,27 @@ pub fn image_to_array(img: &image::DynamicImage) -> RGBAImage {
 
     rgba
 }
+
+/**
+ * Fill a DynamicImage with a given color.
+ * 
+ * # Arguments
+ * * `img` - The DynamicImage to fill.
+ * * `color` - The color to fill the image with.
+ * 
+ * # Returns
+ * * The filled DynamicImage.
+ */
+pub fn fill_dynamic_image(img: &mut DynamicImage, color: Rgba<u8>) {
+    let mut buffer = image::DynamicImage::new_rgb8(img.width(), img.height());
+    for mut pixel in img.pixels() {
+        pixel.2 = color;
+        buffer.put_pixel(pixel.0, pixel.1, color);
+    }
+    //img.put_pixel(pixel.0, pixel.1, color)
+   img.copy_from(&buffer, 0, 0).unwrap();
+}
+//
 
 /**
  * Write the contents of this image to the Writer in PNG format.
