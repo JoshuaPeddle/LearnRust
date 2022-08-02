@@ -3,7 +3,7 @@ use std::path::Path;
 
 use image::{DynamicImage, GenericImageView, ImageFormat, Rgba, GenericImage};
 
-// //Create a guassian kernel with a given size and sigma
+// //Create a gaussian kernel with a given size and sigma
 
 /**
  * Extract the file extention from a path.
